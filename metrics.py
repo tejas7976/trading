@@ -9,6 +9,9 @@ def _safe_div(a: float, b: float) -> float:
 
 
 def compute_metrics(trades: pd.DataFrame, equity_curve: pd.Series, initial_balance: float) -> dict:
+    if initial_balance <= 0:
+        raise ValueError("initial_balance must be greater than 0")
+
     if trades.empty:
         final_balance = float(equity_curve.iloc[-1]) if len(equity_curve) else initial_balance
         return {
@@ -33,7 +36,7 @@ def compute_metrics(trades: pd.DataFrame, equity_curve: pd.Series, initial_balan
     gross_loss = abs(float(losses["pnl"].sum()))
 
     running_max = equity_curve.cummax()
-    dd = (equity_curve - running_max) / running_max.replace(0, np.nan)
+    dd = (equity_curve - running_max) / np.maximum(running_max, 1e-12)
 
     final_balance = float(equity_curve.iloc[-1])
 

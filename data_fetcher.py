@@ -20,8 +20,7 @@ YF_INTERVAL_MAP = {
     "1m": "1m",
     "5m": "5m",
     "15m": "15m",
-    "1h": "60m",
-    "4h": "60m",
+    "1h": "1h",
     "1d": "1d",
 }
 
@@ -40,6 +39,14 @@ def _ensure_ohlcv(df: pd.DataFrame) -> pd.DataFrame:
     out = renamed[cols].dropna().copy()
     out.index.name = "timestamp"
     return out
+
+
+def _to_yfinance_symbol(symbol: str) -> str:
+    if symbol.endswith("USDT"):
+        return f"{symbol[:-4]}-USD"
+    if symbol.endswith("-USD"):
+        return symbol
+    raise ValueError(f"Unsupported symbol format for yfinance: {symbol}. Expected e.g. BTCUSDT.")
 
 
 def fetch_binance_futures(symbol: str, timeframe: str, start_date: str, end_date: str) -> pd.DataFrame:
@@ -86,7 +93,7 @@ def fetch_yfinance(symbol: str, timeframe: str, start_date: str, end_date: str) 
     if interval is None:
         raise ValueError(f"Unsupported timeframe for yfinance: {timeframe}")
 
-    yf_symbol = symbol.replace("USDT", "-USD")
+    yf_symbol = _to_yfinance_symbol(symbol)
     df = yf.download(yf_symbol, start=start_date, end=end_date, interval=interval, auto_adjust=False, progress=False)
     if df.empty:
         raise ValueError("No yfinance data returned")
@@ -94,7 +101,10 @@ def fetch_yfinance(symbol: str, timeframe: str, start_date: str, end_date: str) 
 
 
 def fetch_synthetic(start_date: str, end_date: str, timeframe: str = "15m") -> pd.DataFrame:
-    freq = {"15m": "15min", "1h": "1H", "1d": "1D"}.get(timeframe, "15min")
+    freq_map = {"15m": "15min", "1h": "1H", "1d": "1D"}
+    if timeframe not in freq_map:
+        raise ValueError(f"Unsupported timeframe for synthetic data: {timeframe}")
+    freq = freq_map[timeframe]
     index = pd.date_range(start=start_date, end=end_date, freq=freq, tz="UTC")
     if len(index) < 10:
         raise ValueError("Synthetic date range too short")

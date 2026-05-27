@@ -88,7 +88,10 @@ class Backtester:
         if pos is None:
             return
 
-        gross_pnl = (exit_price - pos.entry_price) * pos.qty if pos.side == "long" else (pos.entry_price - exit_price) * pos.qty
+        if pos.side == "long":
+            gross_pnl = (exit_price - pos.entry_price) * pos.qty
+        else:
+            gross_pnl = (pos.entry_price - exit_price) * pos.qty
         fees = (pos.entry_price + exit_price) * pos.qty * self.cfg.fee_rate
         pnl = gross_pnl - fees
         self.balance += pnl
@@ -143,7 +146,10 @@ class Backtester:
                 self._close_position(i, "stop_loss", pos.stop_loss)
 
     def run(self) -> tuple[pd.DataFrame, pd.Series]:
-        start = max(self.cfg.ema_trend, self.cfg.atr_period, self.cfg.adx_period, self.cfg.rsi_period) + 1
+        # Use a larger warmup window so long-period EMA/ADX/ATR values are more stable.
+        warmup = 2 * max(self.cfg.ema_trend, self.cfg.atr_period, self.cfg.adx_period, self.cfg.rsi_period)
+        # +1 ensures crossover checks can safely reference the previous bar.
+        start = warmup + 1
 
         for i in range(start, len(self.df)):
             if self.position is not None:

@@ -16,19 +16,19 @@ This repository contains a complete backtesting framework for the professional c
 
 ## Files
 
-- `/tmp/workspace/tejas7976/trading/config.py` - strategy and runtime configuration
-- `/tmp/workspace/tejas7976/trading/data_fetcher.py` - Binance futures (ccxt), yfinance, synthetic data fetchers
-- `/tmp/workspace/tejas7976/trading/indicators.py` - EMA, RSI, ADX, ATR calculations
-- `/tmp/workspace/tejas7976/trading/strategy.py` - backtester engine and trade management
-- `/tmp/workspace/tejas7976/trading/metrics.py` - performance statistics
-- `/tmp/workspace/tejas7976/trading/visualizer.py` - trade and equity visualization
-- `/tmp/workspace/tejas7976/trading/main.py` - main entry point
-- `/tmp/workspace/tejas7976/trading/example_usage.py` - multi-symbol usage example
+- `config.py` - strategy and runtime configuration
+- `data_fetcher.py` - Binance futures (ccxt), yfinance, synthetic data fetchers
+- `indicators.py` - EMA, RSI, ADX, ATR calculations
+- `strategy.py` - backtester engine and trade management
+- `metrics.py` - performance statistics
+- `visualizer.py` - trade and equity visualization
+- `main.py` - main entry point
+- `example_usage.py` - multi-symbol usage example
 
 ## Installation
 
 ```bash
-cd /tmp/workspace/tejas7976/trading
+cd <repository_directory>
 pip install -r requirements.txt
 ```
 

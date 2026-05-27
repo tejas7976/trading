@@ -4,7 +4,16 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def plot_results(df: pd.DataFrame, trades: pd.DataFrame, equity_curve: pd.Series, metrics: dict, output_file: str = "backtest_results.png") -> None:
+def plot_results(
+    df: pd.DataFrame,
+    trades: pd.DataFrame,
+    equity_curve: pd.Series,
+    metrics: dict,
+    output_file: str = "backtest_results.png",
+    rsi_long_threshold: float = 55.0,
+    rsi_short_threshold: float = 45.0,
+    adx_threshold: float = 20.0,
+) -> None:
     fig, axes = plt.subplots(3, 1, figsize=(14, 12), sharex=True, gridspec_kw={"height_ratios": [2, 1, 1]})
 
     ax_price, ax_mom, ax_eq = axes
@@ -27,9 +36,13 @@ def plot_results(df: pd.DataFrame, trades: pd.DataFrame, equity_curve: pd.Series
 
     ax_mom.plot(df.index, df["rsi"], label="RSI", linewidth=1.0)
     ax_mom.plot(df.index, df["adx"], label="ADX", linewidth=1.0)
-    ax_mom.axhline(55, linestyle="--", linewidth=0.8)
-    ax_mom.axhline(45, linestyle="--", linewidth=0.8)
-    ax_mom.axhline(20, linestyle=":", linewidth=0.8)
+    ax_mom.axhline(
+        rsi_long_threshold, linestyle="--", linewidth=0.8, label=f"RSI Long Threshold ({rsi_long_threshold:g})"
+    )
+    ax_mom.axhline(
+        rsi_short_threshold, linestyle="--", linewidth=0.8, label=f"RSI Short Threshold ({rsi_short_threshold:g})"
+    )
+    ax_mom.axhline(adx_threshold, linestyle=":", linewidth=0.8, label=f"ADX Threshold ({adx_threshold:g})")
     ax_mom.legend(loc="upper left")
     ax_mom.set_title("RSI / ADX")
     ax_mom.grid(alpha=0.3)

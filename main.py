@@ -37,7 +37,16 @@ def run_backtest(cfg: BacktestConfig):
     trades, equity_curve = backtester.run()
 
     stats = compute_metrics(trades, equity_curve, cfg.initial_balance)
-    plot_results(df, trades, equity_curve, stats, output_file=f"{cfg.symbol}_{cfg.timeframe}_backtest.png")
+    plot_results(
+        df,
+        trades,
+        equity_curve,
+        stats,
+        output_file=f"{cfg.symbol}_{cfg.timeframe}_backtest.png",
+        rsi_long_threshold=cfg.rsi_long_threshold,
+        rsi_short_threshold=cfg.rsi_short_threshold,
+        adx_threshold=cfg.adx_threshold,
+    )
 
     print("Backtest complete")
     print(f"Symbol: {cfg.symbol}  Timeframe: {cfg.timeframe}  Source: {source_used}")
